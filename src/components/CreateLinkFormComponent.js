@@ -28,7 +28,7 @@ const CreateLinkFormComponent = () => {
 
     try {
       storeNewLink({name, url}).then(res => {
-        if (res.statusCode !== 200) {
+        if (res.statusCode !== 200 && res.statusCode !== 201) {
           setStatus({
             type: 'danger',
             msg: res.message,
