@@ -1,18 +1,19 @@
 const getGoLinks = async (owner) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        {
-          name: 'fb',
-          url: 'http://facebook.com',
-        },
-        {
-          name: 'tw',
-          url: 'http://twitter.com',
-        }
-      ]);
-    }, 1000);
-  })
+  try {
+    const url = `${process.env.REACT_APP_API_URL}/links`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    return {
+      OK: true,
+      data,
+    };
+  }catch(err) {
+    return {
+      OK: false,
+      error: "Error getting links. Try again later.",
+    }
+  }
 }
 
 export default getGoLinks;
