@@ -7,6 +7,8 @@ const CreateLinkFormComponent = () => {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [status, setStatus] = useState(null);
+  const [routine, setRoutine] = useState("");
+  const [isRoutine, setIsRoutine] = useState(false);
 
   function handleNameChange(e) {
     const newValue = e.target.value;
@@ -18,6 +20,17 @@ const CreateLinkFormComponent = () => {
     setUrl(newValue);
   }
 
+  function handleRoutineChange(e) {
+    const newValue = e.target.value;
+    console.log(newValue);
+    setRoutine(newValue);
+  }
+
+  function handleIsRoutineChange(e) {
+    const newValue = e.target.checked;
+    setIsRoutine(newValue);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -26,9 +39,23 @@ const CreateLinkFormComponent = () => {
       msg: "Creating...",
     });
 
+    const saveData = {
+      name,
+    }
+
+    if (isRoutine) {
+      saveData.routine = routine;
+    } else {
+      saveData.url = url;
+    }
+
     try {
-      storeNewLink({name, url}).then(res => {
-        if (res.statusCode !== 200 && res.statusCode !== 201) {
+      storeNewLink(saveData).then(res => {
+        // Turns out that when the request is successful,
+        // we receive the created link object itself. So whenever we get
+        // a response with a statuscode, it means something went not-so-good.
+        // This is a tech-debt, but I'm too lazy to fix it right now.
+        if (res.statusCode) {
           setStatus({
             type: 'danger',
             msg: res.message,
@@ -43,6 +70,7 @@ const CreateLinkFormComponent = () => {
 
         setName("");
         setUrl("");
+        setRoutine("");
       });
 
     } catch(err) {
@@ -51,12 +79,6 @@ const CreateLinkFormComponent = () => {
         msg: err,
       });
     }
-  }
-
-  function renderStatus() {
-    if (!status) return;
-
-    return <Alert variant={status.type}>{status.msg}</Alert>
   }
 
   return (
@@ -69,9 +91,18 @@ const CreateLinkFormComponent = () => {
           </Form.Group>
         </Col>
 
-        <Col className="col-6">
+        <Col className="col-5">
           <Form.Group>
-            <Form.Control onChange={handleUrlChange} type="text" placeholder="Enter url" value={url}></Form.Control>
+            { isRoutine
+              ? <Form.Control onChange={handleRoutineChange} type="text" placeholder="Enter routine name" value={routine}></Form.Control>
+              : <Form.Control onChange={handleUrlChange} type="text" placeholder="Enter url" value={url}></Form.Control>
+            }
+          </Form.Group>
+        </Col>
+
+        <Col className="col-1">
+          <Form.Group>
+            <Form.Check type="checkbox" id="isRoutineCb" onChange={handleIsRoutineChange} value={isRoutine} label="Routine" />
           </Form.Group>
         </Col>
 
@@ -80,7 +111,9 @@ const CreateLinkFormComponent = () => {
         </Col>
       </Row>
       <Row>
-        {renderStatus()}
+        {status &&
+          <Alert variant={status.type}>{status.msg}</Alert>
+        }
       </Row>
     </Form>
   )
