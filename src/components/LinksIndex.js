@@ -44,7 +44,12 @@ const LinksIndex = () => {
           links.map((link, index) =>
             <tr key={index}>
               <td>{link.name}</td>
-              <td><a href={link.url}>{link.url}</a></td>
+              <td>
+                { link.routine
+                  ? `Routine: ${link.routine}`
+                  : <a href={link.url}>{link.url}</a>
+                }
+              </td>
             </tr>
           )
         }
