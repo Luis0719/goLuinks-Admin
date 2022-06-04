@@ -1,14 +1,16 @@
+import linksApi from "./linksApi";
+
 async function storeNewLink(data) {
-  const url = `${process.env.REACT_APP_API_URL}/api/links/create`;
-  const res = await fetch(url, {
-    method: 'POST',
+  const path = "create";
+  const options = {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  });
+  };
 
-  return res.json();
+  return linksApi(path, options);
 }
 
 export default storeNewLink;
